@@ -29,7 +29,7 @@ app.post('/upload', async (req, res) => {
       filePath,
       title,
       description = '',
-      tags       = [],
+      tags = [],
       privacyStatus = 'private',
       publishAt,
       defaultLanguage,
@@ -50,11 +50,21 @@ app.post('/upload', async (req, res) => {
     const status = { privacyStatus };
     if (publishAt) status.publishAt = publishAt;
 
-    // 5. Faz upload (resumable por padrão)
+    // 5. Monta snippet com os campos apropriados
+    const snippet = {
+      title,
+      description,
+      tags
+    };
+
+    if (defaultLanguage) snippet.defaultLanguage = defaultLanguage;
+    if (defaultAudioLanguage) snippet.defaultAudioLanguage = defaultAudioLanguage;
+
+    // 6. Faz upload (resumable por padrão)
     const response = await youtube.videos.insert({
       part: ['snippet', 'status'],
       requestBody: {
-        snippet: { title, description, tags },
+        snippet,
         status
       },
       media: {
